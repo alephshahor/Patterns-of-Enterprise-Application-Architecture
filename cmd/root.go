@@ -1,15 +1,13 @@
 package cmd
 
 import (
-"fmt"
-"os"
-"github.com/joho/godotenv"
-"github.com/spf13/cobra"
+	"fmt"
+	"github.com/joho/godotenv"
+	"github.com/spf13/cobra"
+	"os"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "up",
-}
+var rootCmd = &cobra.Command{}
 
 func init() {
 	configFilePath := os.Getenv("GOPATH") + "/src/github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/.env"

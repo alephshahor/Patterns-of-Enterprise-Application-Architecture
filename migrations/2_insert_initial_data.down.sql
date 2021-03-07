@@ -1,8 +1,3 @@
-INSERT INTO products(product_name, product_type)
-VALUES('word_processor_product', 'word_processor');
-
-INSERT INTO products(product_name, product_type)
-VALUES('database_product', 'database');
-
-INSERT INTO products(product_name, product_type)
-VALUES('spreadsheet_product', 'spreadsheet');
+DELETE FROM products WHERE product_type = 'word_processor';
+DELETE FROM products WHERE product_type = 'database';
+DELETE FROM products WHERE product_type = 'spreadsheet';

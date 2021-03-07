@@ -1,20 +1,15 @@
-package main
+package db
 
 import (
-	"github.com/go-pg/pg/v10"
 	"os"
-	"sync"
+
+	"github.com/go-pg/pg/v10"
 )
 
 var db *pg.DB
 
 func DB() *pg.DB {
-	var lock = &sync.Mutex{}
-
 	if db == nil {
-		lock.Lock()
-		defer lock.Unlock()
-
 		db = pg.Connect(&pg.Options{
 			Addr:     os.Getenv("PG_ADDR"),
 			User:     os.Getenv("PG_USER"),
@@ -22,6 +17,5 @@ func DB() *pg.DB {
 			Database: os.Getenv("PG_DB"),
 		})
 	}
-
 	return db
 }

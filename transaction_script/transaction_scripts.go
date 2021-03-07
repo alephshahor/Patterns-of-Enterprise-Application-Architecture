@@ -7,12 +7,13 @@ import (
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/models"
 )
 
-func CreateContract(productID uint, revenue float64, dateSigned time.Time) error {
+// TODO: Devolver lo que haz creado!
+func CreateContract(productID uint, revenue float64, dateSigned time.Time) (*models.Contract, error) {
 	var err error
 
 	var product *models.Product
 	if product, err = Gateway().FindProductByID(productID); err != nil {
-		return err
+		return nil, err
 	}
 
 	var newContract = &models.Contract{
@@ -22,7 +23,7 @@ func CreateContract(productID uint, revenue float64, dateSigned time.Time) error
 	}
 
 	if err = Gateway().CreateContract(newContract); err != nil {
-		return err
+		return nil, err
 	}
 
 	var revenueRecognitions []*models.RevenueRecognition
@@ -31,56 +32,49 @@ func CreateContract(productID uint, revenue float64, dateSigned time.Time) error
 
 	case enums.WordProcessor:
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue,
-			DateSigned: dateSigned,
+			ContractID:   newContract.ContractID,
+			Amount:       revenue,
+			RecognizedOn: dateSigned,
 		})
 	case enums.Spreadsheet:
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned,
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned,
 		})
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned.AddDate(0, 0, 60),
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned.AddDate(0, 0, 60),
 		})
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned.AddDate(0, 0, 90),
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned.AddDate(0, 0, 90),
 		})
 	case enums.Database:
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned,
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned,
 		})
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned.AddDate(0, 0, 30),
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned.AddDate(0, 0, 30),
 		})
 		revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
-			ContractID: newContract.ContractID,
-			ProductID:  productID,
-			Revenue:    revenue / 3,
-			DateSigned: dateSigned.AddDate(0, 0, 60),
+			ContractID:   newContract.ContractID,
+			Amount:       revenue / 3,
+			RecognizedOn: dateSigned.AddDate(0, 0, 60),
 		})
 	}
 
 	if err = Gateway().CreateRevenueRecognitions(revenueRecognitions); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return newContract, nil
 }
 
 func CalculateRevenueRecognitions(contractID uint, date time.Time) (float64, error) {
@@ -92,7 +86,7 @@ func CalculateRevenueRecognitions(contractID uint, date time.Time) (float64, err
 
 	var totalRevenue float64
 	for _, revenueRecognition := range revenueRecognitions {
-		totalRevenue = revenueRecognition.Revenue
+		totalRevenue += revenueRecognition.Amount
 	}
 
 	return totalRevenue, nil
