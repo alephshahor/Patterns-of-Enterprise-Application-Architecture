@@ -1,4 +1,4 @@
-package transaction_script
+package gateway
 
 import (
 	"time"

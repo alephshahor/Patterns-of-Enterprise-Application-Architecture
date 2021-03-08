@@ -1,13 +1,12 @@
-package transaction_script
+package gateway
 
 import (
 	"testing"
 	"time"
 
-	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
-
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/cmd"
-	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/models"
+	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/domain_patterns/domain_model/domain_models"
+	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -27,7 +26,7 @@ func (suite *GatewayTestSuite) TestGateway() {
 
 func (suite *GatewayTestSuite) TestCreateContract() {
 	var err error
-	var contract = &models.Contract{
+	var contract = &domain_models.Contract{
 		ProductID:  1,
 		Revenue:    60,
 		DateSigned: time.Now(),
@@ -38,9 +37,9 @@ func (suite *GatewayTestSuite) TestCreateContract() {
 
 func (suite *GatewayTestSuite) TestCreateRevenueRecognitions() {
 	var err error
-	var revenueRecognitions []*models.RevenueRecognition
+	var revenueRecognitions []*domain_models.RevenueRecognition
 
-	revenueRecognitions = append(revenueRecognitions, &models.RevenueRecognition{
+	revenueRecognitions = append(revenueRecognitions, &domain_models.RevenueRecognition{
 		ContractID:   1,
 		Amount:       60,
 		RecognizedOn: time.Now(),
@@ -52,7 +51,7 @@ func (suite *GatewayTestSuite) TestCreateRevenueRecognitions() {
 
 func (suite *GatewayTestSuite) TestFindContractByID() {
 	var err error
-	var contract *models.Contract
+	var contract *domain_models.Contract
 
 	contract, err = Gateway().FindContractByID(1)
 
@@ -65,7 +64,7 @@ func (suite *GatewayTestSuite) TestFindContractByID() {
 
 func (suite *GatewayTestSuite) TestFindProductByID() {
 	var err error
-	var product *models.Product
+	var product *domain_models.Product
 
 	product, err = Gateway().FindProductByID(1)
 
@@ -78,7 +77,7 @@ func (suite *GatewayTestSuite) TestFindProductByID() {
 
 func (suite *GatewayTestSuite) TestFindRevenueRecognitionForContractBeforeDate() {
 	var err error
-	var revenueRecognitions []*models.RevenueRecognition
+	var revenueRecognitions []*domain_models.RevenueRecognition
 	revenueRecognitions, err = Gateway().FindRevenueRecognitionForContractBeforeDate(1, time.Now())
 
 	assert.Nil(suite.T(), err)
