@@ -10,8 +10,7 @@ type IRevenueRecognitionStrategy interface {
 	CreateRevenueRecognitions(contractID uint, amount float64, dateSigned time.Time) []*RevenueRecognition
 }
 
-type WordProcessorStrategy struct {
-}
+type WordProcessorStrategy struct{}
 
 func (s *WordProcessorStrategy) CreateRevenueRecognitions(contractID uint, amount float64, dateSigned time.Time) []*RevenueRecognition {
 	var revenueRecognitions []*RevenueRecognition
@@ -20,8 +19,7 @@ func (s *WordProcessorStrategy) CreateRevenueRecognitions(contractID uint, amoun
 	return revenueRecognitions
 }
 
-type SpreadsheetStrategy struct {
-}
+type SpreadsheetStrategy struct{}
 
 func (s *SpreadsheetStrategy) CreateRevenueRecognitions(contractID uint, amount float64, dateSigned time.Time) []*RevenueRecognition {
 	var revenueRecognitions []*RevenueRecognition
@@ -35,8 +33,7 @@ func (s *SpreadsheetStrategy) CreateRevenueRecognitions(contractID uint, amount 
 	return revenueRecognitions
 }
 
-type DatabaseStrategy struct {
-}
+type DatabaseStrategy struct{}
 
 func (s *DatabaseStrategy) CreateRevenueRecognitions(contractID uint, amount float64, dateSigned time.Time) []*RevenueRecognition {
 	var revenueRecognitions []*RevenueRecognition
