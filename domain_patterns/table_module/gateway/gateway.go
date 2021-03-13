@@ -1,8 +1,9 @@
 package gateway
 
 import (
-	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
 	"time"
+
+	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
 
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/db"
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/models"
@@ -13,6 +14,7 @@ type IGateway interface {
 	CreateContract(productID uint, revenue float64, dateSigned time.Time) (uint, error)
 	CreateRevenueRecognition(contractID uint, amount float64, recognizedOn time.Time) error
 	FindProductType(productID uint) (enums.ProductType, error)
+	FindRevenueRecognitionAmount(contractID uint, recognizedOn time.Time) ([]float64, error)
 }
 
 type gateway struct{}
@@ -58,13 +60,30 @@ func (g *gateway) CreateRevenueRecognition(contractID uint, amount float64, reco
 func (g *gateway) FindProductType(productID uint) (enums.ProductType, error) {
 	var err error
 
-	var product = new(models.Product)
+	var productType enums.ProductType
 	if err = db.DB().
-		Model(product).
+		Model((*models.Product)(nil)).
+		Column("product_type").
 		Where("product_id = ?", productID).
-		First(); err != nil {
+		Select(&productType); err != nil {
 		return enums.WordProcessor, err
 	}
 
-	return product.ProductType, nil
+	return productType, nil
+}
+
+func (g *gateway) FindRevenueRecognitionAmount(contractID uint, recognizedOn time.Time) ([]float64, error) {
+	var err error
+
+	var revenueRecognitionAmount []float64
+	if err = db.DB().
+		Model((*models.RevenueRecognition)(nil)).
+		Column("amount").
+		Where("contract_id = ?", contractID).
+		Where("recognized_on <= ?", recognizedOn).
+		Select(&revenueRecognitionAmount); err != nil {
+		return nil, err
+	}
+
+	return revenueRecognitionAmount, err
 }

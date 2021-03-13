@@ -5,7 +5,6 @@ import (
 
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/domain_patterns/table_module/gateway"
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
-	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/models"
 )
 
 type contractTableModule struct {
@@ -64,22 +63,4 @@ func (m *contractTableModule) Create(productID uint, revenue float64, dateSigned
 	}
 
 	return contractID, nil
-}
-
-func (m *contractTableModule) CalculateRevenueRecognition(contractID uint) (float64, error) {
-	var err error
-
-	var revenueRecognitions []*models.RevenueRecognition
-	// TODO: No puedes traer objetos, no existen instancias!
-	if revenueRecognitions, err = gateway.Gateway().FindRevenueRecognitionForContractBeforeDate(contractID, time.Now()); err != nil {
-		return 0, err
-	}
-
-	var totalRevenueRecognition float64
-	for _, revenueRecognition := range revenueRecognitions {
-		// TODO: No puedes, no existen instancias!!?
-		totalRevenueRecognition += revenueRecognition.Amount
-	}
-
-	return totalRevenueRecognition, err
 }
