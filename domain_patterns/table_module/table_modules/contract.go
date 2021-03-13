@@ -41,24 +41,18 @@ func (m *contractTableModule) Create(productID uint, revenue float64, dateSigned
 			return 0, err
 		}
 	case enums.Database:
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned); err != nil {
-			return 0, err
-		}
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 30)); err != nil {
-			return 0, err
-		}
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60)); err != nil {
-			return 0, err
+		var dateRanges = []int{0, 30, 60}
+		for _, date := range dateRanges {
+			if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, date)); err != nil {
+				return 0, err
+			}
 		}
 	case enums.Spreadsheet:
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned); err != nil {
-			return 0, err
-		}
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60)); err != nil {
-			return 0, err
-		}
-		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 90)); err != nil {
-			return 0, err
+		var dateRanges = []int{0, 60, 90}
+		for _, date := range dateRanges {
+			if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, date)); err != nil {
+				return 0, err
+			}
 		}
 	}
 
