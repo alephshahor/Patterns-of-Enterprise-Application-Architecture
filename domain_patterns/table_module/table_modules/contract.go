@@ -28,22 +28,39 @@ func (m *contractTableModule) Create(productID uint, revenue float64, dateSigned
 
 	var productTableModule *productTableModule
 	productTableModule = NewProductTableModule(m.dataset)
-	var productType = productTableModule.FindProductType(productID)
+	var productType enums.ProductType
+	if productType, err = productTableModule.FindProductType(productID); err != nil {
+		return 0, err
+	}
 
 	var revenueRecognitionTableModule *revenueRecognitionTableModule
-	revenueRecognitionTableModule = NewRevenueRecognitionTablemodule(m.dataset)
+	revenueRecognitionTableModule = NewRevenueRecognitionTableModule(m.dataset)
 
 	switch productType {
 	case enums.WordProcessor:
-		revenueRecognitionTableModule.Create(contractID, revenue, dateSigned)
+		if err = revenueRecognitionTableModule.Create(contractID, revenue, dateSigned); err != nil {
+			return 0, err
+		}
 	case enums.Database:
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned)
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 30))
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60))
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned); err != nil {
+			return 0, err
+		}
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 30)); err != nil {
+			return 0, err
+		}
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60)); err != nil {
+			return 0, err
+		}
 	case enums.Spreadsheet:
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned)
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60))
-		revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 90))
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned); err != nil {
+			return 0, err
+		}
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 60)); err != nil {
+			return 0, err
+		}
+		if err = revenueRecognitionTableModule.Create(contractID, revenue/3, dateSigned.AddDate(0, 0, 90)); err != nil {
+			return 0, err
+		}
 	}
 
 	return contractID, nil

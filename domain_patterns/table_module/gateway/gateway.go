@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/enums"
 	"time"
 
 	"github.com/alephshahor/Patterns-of-Enterprise-Application-Architecture/db"
@@ -10,10 +11,8 @@ import (
 // Table Data Gateway (144)
 type IGateway interface {
 	CreateContract(productID uint, revenue float64, dateSigned time.Time) (uint, error)
-	CreateRevenueRecognitions(revenueRecognitions []*models.RevenueRecognition) error
-	FindContractByID(contractID uint) (*models.Contract, error)
-	FindProductByID(productID uint) (*models.Product, error)
-	FindRevenueRecognitionForContractBeforeDate(contractID uint, date time.Time) ([]*models.RevenueRecognition, error)
+	CreateRevenueRecognition(contractID uint, amount float64, recognizedOn time.Time) error
+	FindProductType(productID uint) (enums.ProductType, error)
 }
 
 type gateway struct{}
@@ -31,7 +30,7 @@ func newGateway() *gateway {
 	return &gateway{}
 }
 
-func (g gateway) CreateContract(productID uint, revenue float64, dateSigned time.Time) (uint, error) {
+func (g *gateway) CreateContract(productID uint, revenue float64, dateSigned time.Time) (uint, error) {
 	var err error
 	var contract = &models.Contract{
 		ProductID:  productID,
@@ -45,45 +44,27 @@ func (g gateway) CreateContract(productID uint, revenue float64, dateSigned time
 	return contract.ContractID, nil
 }
 
-func (g gateway) CreateRevenueRecognitions(revenueRecognitions []*models.RevenueRecognition) error {
+func (g *gateway) CreateRevenueRecognition(contractID uint, amount float64, recognizedOn time.Time) error {
 	var err error
-	if _, err = db.DB().Model(&revenueRecognitions).
-		Insert(); err != nil {
-		return err
+	var revenueRecognition = &models.RevenueRecognition{
+		ContractID:   contractID,
+		Amount:       amount,
+		RecognizedOn: recognizedOn,
 	}
-	return nil
+	_, err = db.DB().Model(revenueRecognition).Insert()
+	return err
 }
 
-func (g gateway) FindContractByID(contractID uint) (*models.Contract, error) {
+func (g *gateway) FindProductType(productID uint) (enums.ProductType, error) {
 	var err error
-	var newContract = new(models.Contract)
-	if err = db.DB().Model(newContract).
-		Where("contract_id = ?", contractID).
-		Select(); err != nil {
-		return nil, err
-	}
-	return newContract, nil
-}
 
-func (g gateway) FindProductByID(productID uint) (*models.Product, error) {
-	var err error
 	var product = new(models.Product)
-	if err = db.DB().Model(product).
+	if err = db.DB().
+		Model(product).
 		Where("product_id = ?", productID).
-		Select(); err != nil {
-		return nil, err
+		First(); err != nil {
+		return enums.WordProcessor, err
 	}
-	return product, err
-}
 
-func (g gateway) FindRevenueRecognitionForContractBeforeDate(contractID uint, date time.Time) ([]*models.RevenueRecognition, error) {
-	var err error
-	var revenueRecognitions []*models.RevenueRecognition
-	if err = db.DB().Model(&revenueRecognitions).
-		Where("contract_id = ?", contractID).
-		Where("recognized_on <= ?", date).
-		Select(); err != nil {
-		return nil, err
-	}
-	return revenueRecognitions, nil
+	return product.ProductType, nil
 }
